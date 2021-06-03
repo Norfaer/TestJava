@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -67,9 +66,9 @@ public class CoinService {
     }
 
     public static void main(String[] args) {
-        int[] testArray = {1,2,5,10,20,15};
+        int[] testArray = {1,3,4,5};
         CoinService cs = new CoinService(testArray);
-        
-        System.out.println( Arrays.toString(cs.getExchange(113)));
+
+        System.out.println( Arrays.toString(cs.getExchange(7)));
     }
 }
