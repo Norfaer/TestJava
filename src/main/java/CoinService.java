@@ -20,6 +20,11 @@ public class CoinService {
         this.availableCoins = availableCoins;
     }
 
+    /**
+     * Get index of the element by value
+     * @param coin
+     * @return int Result index or -1 if element was not found
+     */
     private int indexAvailableOf(int coin) {
         for(int i=0;i<this.availableCoins.length;i++) {
             if(this.availableCoins[i] == coin) {
@@ -90,10 +95,4 @@ public class CoinService {
         return resultSet;
     }
 
-    public static void main(String[] args) throws CoinServiceException {
-        int[] testArray = {1, 10, 16, 19, 32, 48, 60, 61, 77};
-        CoinService cs = new CoinService(testArray);
-
-        System.out.println( Arrays.toString(cs.getExchange(57)));
-    }
 }
