@@ -5,7 +5,18 @@ public class CoinService {
     private int[] availableCoins;
     private HashMap<Integer,Integer> cacheMin = new HashMap<Integer, Integer>();
 
-    public CoinService(int[] availableCoins) {
+    /**
+     * Create coin service instance
+     * @param availableCoins - Array of available coins for exchange
+     * @throws CoinServiceException
+     */
+    public CoinService(int[] availableCoins) throws CoinServiceException {
+        if(Arrays.stream(availableCoins).anyMatch(x -> x <= 0)) {
+            throw new CoinServiceException("Only positive non-zero values allowed.");
+        }
+        if (!Arrays.stream(availableCoins).anyMatch(x -> x == 1)) {
+            throw new CoinServiceException("Coin with denomination 1 is needed.");
+        }
         this.availableCoins = availableCoins;
     }
 
@@ -18,7 +29,12 @@ public class CoinService {
         return -1;
     }
 
-    private int countMinExchange(int howMuch) {
+    /**
+     * Count minimum coins for exchange of howMuch
+     * @param howMuch The amount to exchange
+     * @return int
+     */
+    public int countMinExchange(int howMuch){
         int minCoins = howMuch;
         int idx = this.indexAvailableOf(howMuch);
         if (idx != -1) {
@@ -28,8 +44,8 @@ public class CoinService {
         if (this.cacheMin.containsKey(howMuch)) {
             return this.cacheMin.get(howMuch);
         }
-        for (int coin : Arrays.stream(availableCoins).filter(x -> x <= howMuch).toArray()) {
-            int numCoins = 1 + countMinExchange(howMuch - coin);
+        for (int coin : Arrays.stream(availableCoins).filter( x -> x <= howMuch).toArray()) {
+            int numCoins = 1 + countMinExchange(howMuch - (int)coin);
             if (numCoins < minCoins) {
                 minCoins = numCoins;
                 this.cacheMin.put(howMuch,minCoins);
@@ -38,7 +54,16 @@ public class CoinService {
         return minCoins;
     }
 
-    public int[] getExchange(int howMuch) {
+    /**
+     * Get array of coins needed to exchange howMuch
+     * @param howMuch The amount to exchange
+     * @return int[]
+     * @throws CoinServiceException
+     */
+    public int[] getExchange(int howMuch)  throws CoinServiceException {
+        if (howMuch < 1) {
+            throw new CoinServiceException("Only positive amount is allowed.");
+        }
         int[] resultSet = new int[this.countMinExchange(howMuch)];
 
         int rest = howMuch;
@@ -46,17 +71,17 @@ public class CoinService {
         while (rest != 0) {
             int minCoins = rest;
             int nextCoin = 0;
-            for (int coin : Arrays.stream(availableCoins).filter(x -> x <= howMuch).toArray()) {
-                if (coin == rest) {
-                    nextCoin = coin;
-                    break;
-                } else {
-                    int minCoinsNext = countMinExchange(rest - coin);
-                    if (minCoins > minCoinsNext) {
-                        minCoins = minCoinsNext;
+            for (int coin : availableCoins) {
+                    if (coin == rest) {
                         nextCoin = coin;
+                        break;
+                    } else if(coin < rest) {
+                        int minCoinsNext = countMinExchange(rest - coin);
+                        if (minCoins > minCoinsNext) {
+                            minCoins = minCoinsNext;
+                            nextCoin = coin;
+                        }
                     }
-                }
             }
             resultSet[resultIndex] = nextCoin;
             rest -= nextCoin;
@@ -65,10 +90,10 @@ public class CoinService {
         return resultSet;
     }
 
-    public static void main(String[] args) {
-        int[] testArray = {1,3,4,5};
+    public static void main(String[] args) throws CoinServiceException {
+        int[] testArray = {1, 10, 16, 19, 32, 48, 60, 61, 77};
         CoinService cs = new CoinService(testArray);
 
-        System.out.println( Arrays.toString(cs.getExchange(7)));
+        System.out.println( Arrays.toString(cs.getExchange(57)));
     }
 }
