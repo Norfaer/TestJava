@@ -39,7 +39,7 @@ public class CoinService {
      * @param howMuch The amount to exchange
      * @return int
      */
-    public int countMinExchange(int howMuch){
+    public int countMinExchange(int howMuch) {
         int minCoins = howMuch;
         int idx = this.indexAvailableOf(howMuch);
         if (idx != -1) {
@@ -49,8 +49,8 @@ public class CoinService {
         if (this.cacheMin.containsKey(howMuch)) {
             return this.cacheMin.get(howMuch);
         }
-        for (int coin : Arrays.stream(availableCoins).filter( x -> x <= howMuch).toArray()) {
-            int numCoins = 1 + countMinExchange(howMuch - (int)coin);
+        for (int coin : Arrays.stream(this.availableCoins).filter( x -> x <= howMuch).toArray()) {
+            int numCoins = 1 + this.countMinExchange(howMuch - (int)coin);
             if (numCoins < minCoins) {
                 minCoins = numCoins;
                 this.cacheMin.put(howMuch,minCoins);
@@ -81,7 +81,7 @@ public class CoinService {
                         nextCoin = coin;
                         break;
                     } else if(coin < rest) {
-                        int minCoinsNext = countMinExchange(rest - coin);
+                        int minCoinsNext = this.countMinExchange(rest - coin);
                         if (minCoins > minCoinsNext) {
                             minCoins = minCoinsNext;
                             nextCoin = coin;

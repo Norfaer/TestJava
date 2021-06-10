@@ -31,32 +31,30 @@ public class CoinServiceTest {
     @Property
     @Report(Reporting.GENERATED)
     void testGenerativeChange(@ForAll("howMuchGen") int howMuch, @ForAll("coinsArray") int[] coinsArray) throws CoinServiceException {
-        service = new CoinService(coinsArray);
-        int result = service.countMinExchange(howMuch);
-        int[] resultArr = service.getExchange(howMuch);
-        //System.out.println(howMuch + " => " + Arrays.toString(coinsArray) + " => ("+result+")" + Arrays.toString(resultArr));
-        Assertions.assertEquals(Arrays.stream(service.getExchange(howMuch)).sum(), howMuch);
+        this.service = new CoinService(coinsArray);
+        Assertions.assertEquals(Arrays.stream(this.service.getExchange(howMuch)).sum(), howMuch);
     }
 
     @Test
     void testExceptionNegativeCoin() {
         int[] invalidInput = { 1, 2, -3, 4 };
-        Throwable exception = assertThrows(CoinServiceException.class, ()-> service = new CoinService(invalidInput));
+        Throwable exception = assertThrows(CoinServiceException.class, ()-> this.service = new CoinService(invalidInput));
         assertEquals("Only positive non-zero values allowed.", exception.getMessage());
     }
 
     @Test
     void testExceptionWithoutOneCoin() {
         int[] invalidInput = { 2, 3, 5, 8 };
-        Throwable exception = assertThrows(CoinServiceException.class, ()-> service = new CoinService(invalidInput));
+        Throwable exception = assertThrows(CoinServiceException.class, ()-> this.service = new CoinService(invalidInput));
         assertEquals("Coin with denomination 1 is needed.", exception.getMessage());
     }
 
     @Test
     void testExceptionNegativeExchange() throws CoinServiceException {
         int[] validInput = { 1, 2, 3, 5, 8 };
-        service = new CoinService(validInput);
-        Throwable exception = assertThrows(CoinServiceException.class, ()-> service.getExchange(-90));
+        int invalidHowMuch = -90;
+        this.service = new CoinService(validInput);
+        Throwable exception = assertThrows(CoinServiceException.class, ()-> this.service.getExchange(invalidHowMuch));
         assertEquals("Only positive amount is allowed.", exception.getMessage());
     }
 
